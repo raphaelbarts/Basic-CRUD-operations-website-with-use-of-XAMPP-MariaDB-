@@ -152,82 +152,7 @@ if(isset($_POST['search'])) {
       &nbsp;
       <input class="btn btn-primary my-4 col text-light" type=button onClick="location.href='addrecord.php'" value='Add new record'>
       &nbsp;
-      <style>
-  .modal-fullscreen {
-    width: 95%;
-    height: 95%;
-    max-width: none;
-  }
-</style>
-
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#fullscreenModal">
-  Export to excel
-</button>
-
-
-<div class="modal fade" id="fullscreenModal" tabindex="-1" role="dialog" aria-labelledby="fullscreenModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-fullscreen" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="fullscreenModalLabel">Export to excel</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">  
-      <table class="table" id="table">
-  <thead>
-    <tr>
-      <th scope="col">ID</th>
-      <th scope="col">Owner</th>
-      <th scope="col">Pet name</th>
-      <th scope="col">Pet type</th>
-      <th scope="col">Pet Breed </th>
-      <th scope="col">Age</th>
-      <th scope="col">Weight</th>
-      <th scope="col">Appointment Date</th>
-      <th scope="col">Appointment Type</th>
-    </tr>
-  </thead>
-  <tbody>
-  <?php
-
-$result=mysqli_query($con,$sql);
-if($result){
-    while($row=mysqli_fetch_assoc($result)){
-        $id=$row['id'];
-        $Owner=$row['Owner'];
-        $Pet=$row['Pet'];
-        $Type=$row['Type'];
-        $Breed=$row['Breed'];
-        $Age=$row['Age'];
-        $Weight=$row['Weight'];
-        $AppointmentDate=$row['AppointmentDate'];
-        $Appointment=$row['Appointment'];
-        echo ' <tr>
-            <th scope="row"> '.$id.' </th>
-            <td>'.$Owner.'</td>
-            <td>'.$Pet.'</td>
-            <td>'.$Type.'</td>
-            <td>'.$Breed.'</td>
-            <td>'.$Age.'</td>
-            <td>'.$Weight.'</td>
-            <td>'.$AppointmentDate.'</td>
-            <td>'.$Appointment.'</td>
-          </tr> ';
-    }
-}
-?>
-  </tbody>
-</table>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button id="downloadexcel" class="btn btn-outline-dark col">Export xlsx file</button>
-      </div>
-    </div>
-  </div>
-</div>
+      <button id="downloadexcel" class="btn btn-outline-dark col">Export xlsx file</button>
       &nbsp;
       <div class="dropdown">
   <button class="btn btn-primary dropdown-toggle" type="button" id="sortDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -248,24 +173,30 @@ if($result){
     <option value="reptile">Reptile</option>
   </select>
   <button class="btn btn-outline-success my-2 my-sm-0 col" type="button" id="filter-btn">Filter</button>
-  <button onclick="" id="notif-btn" type="button">bell</button>
-  <div id="notif-div" style="display: none;" >notifications
-  <?php 
+  &nbsp;
+<button id="notif-btn" type="button" class="btn btn-secondary position-relative" data-container="body" data-toggle="popover" data-placement="bottom">
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16">
+  <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6z"/>
+</svg>
+  <span id="notif-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+    <span id="notif-number"></span>
+  </span>
+</button>
+
+<?php 
   $result=mysqli_query($con,$sql);
-if($result){
-    
+  $count = 0;
+  $content = "";
+  if($result){
     while($row=mysqli_fetch_assoc($result)){
-    
-        if($AppointmentDate=$row['AppointmentDate'] == date('Y-m-d')){
-            echo $row['Owner'];
-            echo $row['Pet'];;
-        };
-        
+      if($AppointmentDate=$row['AppointmentDate'] == date('Y-m-d')){
+        $content .= $row['Pet'] . "'s " . $row['Appointment'] . " is scheduled today <br>";
+        $count++;
+      };
     }
-}
-     
-  
-  ?></div>
+  }
+?>
+</div>
 </form>
     </form>
   </div>
@@ -388,9 +319,18 @@ if($result){
 });
 </script>
 <script>
-  document.getElementById("notif-btn").addEventListener("click", function() {
-  document.getElementById("notif-div").style.display="block";
-});
+  $(document).ready(function(){
+    $('#notif-number').text("<?php echo $count; ?>");
+    $('#notif-btn').popover({
+      content: "<?php echo $content; ?>",
+      html: true
+    });
+    $('#notif-btn').on('shown.bs.popover', function () {
+      setTimeout(function() {
+        $('#notif-btn').popover('hide');
+      }, 5000);
+    });
+  });
 </script>
 </body>
 </html>
