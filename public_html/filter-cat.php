@@ -171,6 +171,10 @@ if(isset($_POST['submit'])){
   </thead>
   <tbody>
   <?php
+  $sortOrder = 'ASC';
+if (isset($_GET['sort']) && $_GET['sort'] === 'DESC') {
+  $sortOrder = 'DESC';
+}
 $sql="SELECT * FROM `records` WHERE `Type`='Cat' ORDER BY `AppointmentDate` $sortOrder";
 $result=mysqli_query($con,$sql);
 if($result){
