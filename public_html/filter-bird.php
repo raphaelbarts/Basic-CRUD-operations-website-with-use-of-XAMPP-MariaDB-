@@ -26,7 +26,7 @@ if(isset($_POST['submit'])){
   }
 }
 ?>
-
+    
 <!DOCTYPE html>
 <html lang="en">
 <link rel="icon" type="image/x-icon" href="logo.png">
@@ -132,7 +132,86 @@ if(isset($_POST['submit'])){
       &nbsp;
       <input class="btn btn-primary my-4 col text-light" type=button onClick="location.href='addrecord.php'" value='Add new record'>
       &nbsp;
-<button id="downloadexcel" class="btn btn-outline-dark col">Export xlsx file</button>
+      <style>
+  .modal-fullscreen {
+    width: 95%;
+    height: 95%;
+    max-width: none;
+  }
+</style>
+
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#fullscreenModal">
+  Export to excel
+</button>
+
+
+<div class="modal fade" id="fullscreenModal" tabindex="-1" role="dialog" aria-labelledby="fullscreenModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="fullscreenModalLabel">Export to excel</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">  
+      <table class="table" id="table">
+  <thead>
+    <tr>
+      <th scope="col">ID</th>
+      <th scope="col">Owner</th>
+      <th scope="col">Pet name</th>
+      <th scope="col">Pet type</th>
+      <th scope="col">Pet Breed </th>
+      <th scope="col">Age</th>
+      <th scope="col">Weight</th>
+      <th scope="col">Appointment Date</th>
+      <th scope="col">Appointment Type</th>
+    </tr>
+  </thead>
+  <tbody>
+  <?php
+  $sortOrder = 'ASC';
+if (isset($_GET['sort']) && $_GET['sort'] === 'DESC') {
+  $sortOrder = 'DESC';
+}
+$sql="SELECT * FROM `records` WHERE `Type`='Bird' ORDER BY `AppointmentDate` $sortOrder";
+$result=mysqli_query($con,$sql);
+if($result){
+    while($row=mysqli_fetch_assoc($result)){
+        $id=$row['id'];
+        $Owner=$row['Owner'];
+        $Pet=$row['Pet'];
+        $Type=$row['Type'];
+        $Breed=$row['Breed'];
+        $Age=$row['Age'];
+        $Weight=$row['Weight'];
+        $AppointmentDate=$row['AppointmentDate'];
+        $Appointment=$row['Appointment'];
+        echo ' <tr>
+            <th scope="row"> '.$id.' </th>
+            <td>'.$Owner.'</td>
+            <td>'.$Pet.'</td>
+            <td>'.$Type.'</td>
+            <td>'.$Breed.'</td>
+            <td>'.$Age.'</td>
+            <td>'.$Weight.'</td>
+            <td>'.$AppointmentDate.'</td>
+            <td>'.$Appointment.'</td>
+          </tr> ';
+    }
+}
+?>
+  </tbody>
+</table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button id="downloadexcel" class="btn btn-outline-dark col">Export xlsx file</button>
+      </div>
+    </div>
+  </div>
+</div>
       <div class="dropdown">
   <button class="btn btn-primary dropdown-toggle" type="button" id="sortDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     Sort Order
@@ -142,6 +221,7 @@ if(isset($_POST['submit'])){
     <a class="dropdown-item" href="?sort=DESC">Descending</a>
   </div>
 </div>
+
 <form class="form-inline my-2 my-lg-0 navbar-container">
   <select class="form-control mr-sm-2 col" id="pet-type">
     <option value="All">All</option>
@@ -185,6 +265,7 @@ if(isset($_POST['submit'])){
     window.location.href = '?sort=' + sortOrder;
   }
 </script>
+
 
 <?php
   $sortOrder = 'ASC';
@@ -281,6 +362,20 @@ if(isset($_POST['submit'])){
     window.location.href = "filter-reptile.php";
   }
 });
+</script>
+<script>
+  $(document).ready(function(){
+    $('#notif-number').text("<?php echo $count; ?>");
+    $('#notif-btn').popover({
+      content: "<?php echo $content; ?>",
+      html: true
+    });
+    $('#notif-btn').on('shown.bs.popover', function () {
+      setTimeout(function() {
+        $('#notif-btn').popover('hide');
+      }, 5000);
+    });
+  });
 </script>
 </body>
 </html>
