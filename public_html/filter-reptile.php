@@ -26,6 +26,7 @@ if(isset($_POST['submit'])){
   }
 }
 ?>
+    
 <!DOCTYPE html>
 <html lang="en">
 <link rel="icon" type="image/x-icon" href="logo.png">
@@ -170,7 +171,11 @@ if(isset($_POST['submit'])){
   </thead>
   <tbody>
   <?php
-
+  $sortOrder = 'ASC';
+if (isset($_GET['sort']) && $_GET['sort'] === 'DESC') {
+  $sortOrder = 'DESC';
+}
+$sql="SELECT * FROM `records` WHERE `Type`='Reptile' ORDER BY `AppointmentDate` $sortOrder";
 $result=mysqli_query($con,$sql);
 if($result){
     while($row=mysqli_fetch_assoc($result)){
@@ -216,10 +221,11 @@ if($result){
     <a class="dropdown-item" href="?sort=DESC">Descending</a>
   </div>
 </div>
+
 <form class="form-inline my-2 my-lg-0 navbar-container">
   <select class="form-control mr-sm-2 col" id="pet-type">
     <option value="All">All</option>
-    <option value="dog" selected>Dog</option>
+    <option value="dog">Dog</option>
     <option value="cat">Cat</option>
     <option value="bird">Bird</option>
     <option value="hamster">Hamster</option>
@@ -259,6 +265,7 @@ if($result){
     window.location.href = '?sort=' + sortOrder;
   }
 </script>
+
 
 <?php
   $sortOrder = 'ASC';
